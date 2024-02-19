@@ -9,20 +9,22 @@ on:
 
 permissions: write-all
 jobs:
-  consolidate-and-sort-data:
+  regenerate-files:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content
+        uses: actions/checkout@v4 # checkout the repository content
 
       - name: Use Node.js 18
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: .github/package-lock.json
 
-      - run: npm start
+      - run: |
+          npm install
+          npm start
         working-directory: .github
 
       - name: Check script outcome
