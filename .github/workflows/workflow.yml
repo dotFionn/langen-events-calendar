@@ -23,6 +23,7 @@ jobs:
           cache-dependency-path: .github/package-lock.json
 
       - run: npm start
+        working-directory: .github
 
       - name: Check script outcome
         run: |
