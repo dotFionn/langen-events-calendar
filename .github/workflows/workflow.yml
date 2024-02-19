@@ -1,0 +1,47 @@
+name: regenerate files
+run-name: Push by ${{ github.actor }} - regenerating files
+
+on:
+  push:
+    branches:
+      - "*"
+      - "*/**"
+
+permissions: write-all
+jobs:
+  consolidate-and-sort-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - run: npm install
+      - run: npm start
+
+      - name: Check script outcome
+        run: |
+          if [ ${{ steps.consolidate.outcome }} != 'success' ]; then
+            echo "Failed to regenerate files after push"
+            exit 1
+          fi
+
+      - if: ${{ steps.consolidate.outcome == 'success' }}
+        name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "Regenerated Files after push" --allow-empty)
+
+      - if: ${{ steps.consolidate.outcome == 'success' }}
+        name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
