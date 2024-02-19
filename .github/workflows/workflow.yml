@@ -20,8 +20,8 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: .github/package-lock.json
 
-      - run: npm install
       - run: npm start
 
       - name: Check script outcome
