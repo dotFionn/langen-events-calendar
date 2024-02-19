@@ -27,23 +27,14 @@ jobs:
           npm start
         working-directory: .github
 
-      - name: Check script outcome
-        run: |
-          if [ ${{ steps.consolidate.outcome }} != 'success' ]; then
-            echo "Failed to regenerate files after push"
-            exit 1
-          fi
-
-      - if: ${{ steps.consolidate.outcome == 'success' }}
-        name: commit files
+      - name: commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
           git diff-index --quiet HEAD || (git commit -a -m "Regenerated Files after push" --allow-empty)
 
-      - if: ${{ steps.consolidate.outcome == 'success' }}
-        name: push changes
+      - name: push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
